@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+option java_package = "service2temperature";
+option java_multiple_files = true;
+option java_outer_classname = "TemperatureControlImpl";
+
+service Service2{
+
+	//server streaming
+	rpc HeatingControl (HeatingRequest) returns (stream HeatingResponse) {}
+	
+	//client streaming
+	rpc AirConControl (stream AirConRequest) returns (AirConResponse) {}
+	
+	//bisteaming
+	rpc WindowControl (stream WindowsRequest) returns (stream WindowsResponse) {}
+
+}
+
+message HeatingRequest {
+	string tooHot = 1;
+}
+
+message HeatingResponse {
+	string tooCold = 1;
+}
+
+message AirConRequest {
+	string coolingAC = 1;
+}
+
+message AirConResponse {
+	string warmingAC = 1;
+}
+
+message WindowsRequest {
+	string openWindow = 1;
+}
+
+message WindowsResponse {
+	string  closeWindow = 1;
+}
