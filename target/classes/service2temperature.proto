@@ -38,5 +38,5 @@ message WindowsRequest {
 }
 
 message WindowsResponse {
-	string  closeWindow = 1;
+	string closeWindow = 1;
 }

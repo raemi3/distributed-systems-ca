@@ -14,16 +14,8 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
-import service1security.CodeRequest;
-import service1security.CodeResponse;
 import service1security.Service1Grpc;
 import service1security.Service1Grpc.Service1BlockingStub;
-import service2temperature.AirConRequest;
-import service2temperature.AirConResponse;
-import service2temperature.HeatingRequest;
-import service2temperature.HeatingResponse;
-import service2temperature.WindowsRequest;
-import service2temperature.WindowsResponse;
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
 import io.grpc.stub.StreamObserver;
@@ -82,7 +74,7 @@ public class GUI_Client implements ActionListener {
 		panel.add(entry2);
 		panel.add(Box.createRigidArea(new Dimension(10, 0)));
 
-		JButton button = new JButton("Power Heating");
+		JButton button = new JButton("Heating");
 		button.addActionListener(this);
 		panel.add(button);
 		panel.add(Box.createRigidArea(new Dimension(10, 0)));
@@ -104,14 +96,14 @@ public class GUI_Client implements ActionListener {
 
 		BoxLayout boxlayout = new BoxLayout(panel, BoxLayout.X_AXIS);
 
-		JLabel label = new JLabel("AirCon - ON or OFF")	;
+		JLabel label = new JLabel("AirCon - ON or OFF or TEMP")	;
 		panel.add(label);
 		panel.add(Box.createRigidArea(new Dimension(10, 0)));
 		entry3 = new JTextField("",10);
 		panel.add(entry3);
 		panel.add(Box.createRigidArea(new Dimension(10, 0)));
 
-		JButton button = new JButton("Power AirCon");
+		JButton button = new JButton("AirCon");
 		button.addActionListener(this);
 		panel.add(button);
 		panel.add(Box.createRigidArea(new Dimension(10, 0)));
@@ -132,14 +124,14 @@ public class GUI_Client implements ActionListener {
 
 		BoxLayout boxlayout = new BoxLayout(panel, BoxLayout.X_AXIS);
 
-		JLabel label = new JLabel("Enter Temperature: ");
+		JLabel label = new JLabel("Windows - OPEN or CLOSE ");
 		panel.add(label);
 		panel.add(Box.createRigidArea(new Dimension(10, 0)));
 		entry4 = new JTextField("",10);
 		panel.add(entry4);
 		panel.add(Box.createRigidArea(new Dimension(10, 0)));
 
-		JButton button = new JButton("Power Windows");
+		JButton button = new JButton("Windows");
 		button.addActionListener(this);
 		panel.add(button);
 		panel.add(Box.createRigidArea(new Dimension(10, 0)));
@@ -202,21 +194,39 @@ public class GUI_Client implements ActionListener {
 			int port = 50051;
 			String host = "localhost";
 			
+//			//jmDNS calling Service1Discovery
+//			ServiceInfo serviceInfo;
+//			String service_type = "_grpc1._tcp.local.";
+//			//Now retrieve the service info - all we are supplying is the service type
+//			serviceInfo = Service1Discovery.run(service_type);
+//			//Use the serviceInfo to retrieve the port
+//			int port = serviceInfo.getPort();
+//			String host = "localhost";
+			
 			ManagedChannel securityChannel = ManagedChannelBuilder.forAddress(host, port).usePlaintext().build();
 			//Create a stub, pass the channel to the stub
 			Service1BlockingStub bstub = Service1Grpc.newBlockingStub(securityChannel);
 			
 			//preparing message to send
 			service1security.CodeRequest request = service1security.CodeRequest.newBuilder().setEnterCode(entry1.getText()).build();
-
-			//retreaving reply from service
+			
+			//receive reply from service
 			service1security.CodeResponse response = bstub.getSecurityCode(request);
 			
 			reply1.setText(String.valueOf(response.getCheckCode()));
 		
 		}
-		else if (label.equals("Power Heating")) {
+		else if (label.equals("Heating")) {
 			System.out.println("Heating System loading...");
+			
+//			//jmDNS calling Service1Discovery
+//			ServiceInfo serviceInfo;
+//			String service_type = "_grpc2._tcp.local.";
+//			//Now retrieve the service info - all we are supplying is the service type
+//			serviceInfo = Service1Discovery.run(service_type);
+//			//Use the serviceInfo to retrieve the port
+//			int port = serviceInfo.getPort();
+//			String host = "localhost";
 			
 			service2temperature.HeatingRequest request = service2temperature.HeatingRequest.newBuilder().setTooHot(entry2.getText()).build();
 
@@ -242,7 +252,7 @@ public class GUI_Client implements ActionListener {
 			service2Stub.heatingControl(request, responseObserver);
 			
 		}
-		else if (label.equals("Power AirCon")) {
+		else if (label.equals("AirCon")) {
 			System.out.println("AirCon System loading...");
 
 				StreamObserver<service2temperature.AirConResponse> responseObserver = new StreamObserver<service2temperature.AirConResponse>() {
@@ -271,7 +281,7 @@ public class GUI_Client implements ActionListener {
 			requestObserver.onCompleted();
 			
 		}
-		else if (label.equals("Power Windows")) {
+		else if (label.equals("Windows")) {
 			System.out.println("Window System loading...");
 
 				StreamObserver<service2temperature.WindowsResponse> responseObserver = new StreamObserver<service2temperature.WindowsResponse>() {

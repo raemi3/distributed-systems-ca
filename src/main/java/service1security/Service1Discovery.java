@@ -11,14 +11,14 @@ import javax.jmdns.ServiceListener;
 
 public class Service1Discovery {
 
-	private int port;
-	private String host;
+	//private int port;
+	//private String host;
 	
 	//option 1
 	private static class MyServiceListener implements ServiceListener{
 
 		private int port;
-		private String host;
+		//private String host;
 		private ServiceInfo serviceInfo;
 		
 		public void serviceAdded(ServiceEvent event) {

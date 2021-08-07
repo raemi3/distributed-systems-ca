@@ -23,6 +23,13 @@ public class TemperatureServer {
 		System.out.println("Starting gRPC Temperature Server");
 		
 		int port = 50052;
+		
+//		//jmDNS calling Service1Registration
+//		String service_type = "_grpc2._tcp.local.";
+//		String service_name = "GrpcServer";
+//		Service2Registration s2r = new Service2Registration();
+//		s2r.run(port, service_type, service_name);
+		
 		server = ServerBuilder.forPort(port).addService(new TemperatureServerImpl()).build().start();
 		
 		System.out.println("Server Running on Port: " + port);
@@ -36,7 +43,7 @@ public class TemperatureServer {
 		//SERVER streaming
 		@Override
 		public void heatingControl(HeatingRequest request, StreamObserver<HeatingResponse> responseObserver) {
-			
+			System.out.println("Server Streaming Server");
 			//find out what the client sent
 			String tooHot = request.getTooHot();
 			System.out.println("Heating : " + tooHot);
@@ -44,15 +51,33 @@ public class TemperatureServer {
 			//build our response
 			HeatingResponse.Builder response = HeatingResponse.newBuilder();
 			
-			//send out messages
-			response.setTooCold("Activating Heating");
-			responseObserver.onNext(response.build());
-			
-			response.setTooCold("Heating has been turned on at 18 degrees celsius");
-			responseObserver.onNext(response.build());
-			
-			response.setTooCold("Heating will turn off once room temperature hits 21 degrees celsius");
-			responseObserver.onNext(response.build());
+			if(tooHot.equalsIgnoreCase("on")) {
+				//send out messages
+				response.setTooCold("Activating Heating");
+				responseObserver.onNext(response.build());
+				
+				response.setTooCold("Heating has been turned on at 18 degrees celsius");
+				responseObserver.onNext(response.build());
+				
+				response.setTooCold("Heating will turn off once room temperature hits 21 degrees celsius");
+				responseObserver.onNext(response.build());
+			}
+			else if(tooHot.equalsIgnoreCase("off")) {
+
+				response.setTooCold("De-activating Heating");
+				responseObserver.onNext(response.build());
+				
+				response.setTooCold("Heating has been turned off");
+				responseObserver.onNext(response.build());
+				
+				response.setTooCold("Heating will turn on once room temperature hits 17 degrees celsius");
+				responseObserver.onNext(response.build());
+			}
+			else {
+				
+				response.setTooCold("Invalid Input - Try Again");
+				responseObserver.onNext(response.build());
+			}
 			
 			responseObserver.onCompleted();
 			
@@ -62,16 +87,68 @@ public class TemperatureServer {
 		//CLIENT streaming
 		@Override
 		public StreamObserver<AirConRequest> airConControl(StreamObserver<AirConResponse> responseObserver) {
-		
-			System.out.println("Inside Client Streaming Server");
+			System.out.println("Client Streaming Server");
 			return new StreamObserver<AirConRequest>() {
-
-				String warmingAC = "";
 				
 				@Override
-				public void onNext(AirConRequest value) {
-					//System.out.println("Message Received: " + value.getCoolingAC());
-					warmingAC = value.getCoolingAC();
+				public void onNext(AirConRequest request) {
+				
+					String coolingAC = request.getCoolingAC();
+					System.out.println("Heating : " + coolingAC);
+					
+					if(coolingAC.equalsIgnoreCase("on")) {
+						//Server Response
+						AirConResponse reply = AirConResponse.newBuilder().setWarmingAC("AirCon Activated").build();
+						
+						responseObserver.onNext(reply);
+						
+						responseObserver.onCompleted();
+					}
+					else if(coolingAC.equalsIgnoreCase("off")) {
+						
+						//Server Response
+						AirConResponse reply = AirConResponse.newBuilder().setWarmingAC("AirCon Deactivated").build();
+						
+						responseObserver.onNext(reply);
+						
+						responseObserver.onCompleted();
+					}
+					else if(coolingAC.equalsIgnoreCase("temp")) {
+						
+						//Server Response
+						AirConResponse reply = AirConResponse.newBuilder().setWarmingAC("AirCon Temperature 16C").build();
+						
+						responseObserver.onNext(reply);
+						
+						responseObserver.onCompleted();
+					}
+					else if(coolingAC.equalsIgnoreCase("higher")) {
+						
+						//Server Response
+						AirConResponse reply = AirConResponse.newBuilder().setWarmingAC("AirCon Temperature 20C").build();
+						
+						responseObserver.onNext(reply);
+						
+						responseObserver.onCompleted();
+					}
+					else if(coolingAC.equalsIgnoreCase("lower")) {
+						
+						//Server Response
+						AirConResponse reply = AirConResponse.newBuilder().setWarmingAC("AirCon Temperature 12C").build();
+						
+						responseObserver.onNext(reply);
+						
+						responseObserver.onCompleted();
+					}
+					else {
+						
+						//Server Response
+						AirConResponse reply = AirConResponse.newBuilder().setWarmingAC("Invalid Input - Try Again").build();
+						
+						responseObserver.onNext(reply);
+						
+						responseObserver.onCompleted();
+					}
 				}
 
 				@Override
@@ -82,18 +159,6 @@ public class TemperatureServer {
 				@Override
 				public void onCompleted() {
 					
-					//AirConResponse.Builder acBuilder = AirConResponse.newBuilder();
-					AirConResponse reply = AirConResponse.newBuilder().setWarmingAC("AirCon").build();
-
-					
-					//message from server back to client
-					//acBuilder.setWarmingAC("Air Conditioning has been set to 16 degrees celsius");
-					
-					//responseObserver.onNext(acBuilder.build());
-					
-					responseObserver.onNext(reply);
-					
-					responseObserver.onCompleted();
 				}
 			};//return statement
 		}//client streaming end
@@ -101,6 +166,7 @@ public class TemperatureServer {
 		//BISTREAMING
 		@Override
 		public StreamObserver<WindowsRequest> windowControl(StreamObserver<WindowsResponse> responseObserver) {
+			System.out.println("Bi-Streaming Server");
 			return new StreamObserver<WindowsRequest>() {
 
 				@Override
@@ -109,9 +175,12 @@ public class TemperatureServer {
 					String openWindow = value.getOpenWindow();
 					System.out.println(value.getOpenWindow());
 					
-					//parsed String into an int to validate codes entered as JTextField doesn't accept int for GUI
 					//String text = openWindow;
 				    //int code = Integer.parseInt(text);
+					//parsed String into an int to validate codes entered as JTextField doesn't accept int for GUI
+					//this allowed the client to enter the room temperature to decide window settings
+					//however this caused errors when words were entered as they could not be parsed to ints so stuck with 
+					//String open & close
 					
 					if(openWindow.equalsIgnoreCase("open")) {
 						
