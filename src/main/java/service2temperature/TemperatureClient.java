@@ -37,7 +37,6 @@
 //	
 //				@Override
 //				public void onError(Throwable t) {
-//					System.out.println("Error In Client Streaming Server");
 //					
 //				}
 //	
@@ -48,23 +47,31 @@
 //				}
 //				
 //			};//return statement
+//			
+//		}
+//		catch (RuntimeException err1) {
+//				err1.printStackTrace();
+//					System.out.println("Server Stream: " + err1);
+//		}
 //		
-//		//use StreamObserver & requestObserver to send our outgoing messages
-//		StreamObserver<HeatingRequest> requestObserverHC = cstub.heatingControl(responseObserverHC);
-//
-//		requestObserverHC.onNext(HeatingRequest.newBuilder().setTooHot("Test message").build());
+////		//POSSIBLY NOT NEED WHEN USING GUI FOR INPUT
+////		//use StreamObserver & requestObserver to send our outgoing messages
+////		StreamObserver<HeatingRequest> requestObserverHC = cstub.heatingControl(responseObserverHC);
+////
+////		requestObserverHC.onNext(HeatingRequest.newBuilder().setTooHot("Test message").build());
+////		
+////		System.out.println("SENDING MESSAGES: " );
+////		requestObserverHC.onCompleted();
 //		
-//		System.out.println("SENDING MESSAGES: " );
-//		requestObserverHC.onCompleted();
-//		
-//		
+//	try {
 //		//CLIENT STREAMING AIR CON CONTROL
 //		// For incoming messages we need to implement a StreamObserver
-//		StreamObserver<AirConRequest> responseObserverAC = new StreamObserver<AirConRequest>() {
+//		StreamObserver<AirConResponse> responseObserverAC = new StreamObserver<AirConResponse>() {
 //
 //				@Override
-//				public void onNext(AirConRequest value) {
-//					System.out.println("Response: " +value.getCoolingAC());
+//				public void onNext(AirConResponse value) {
+//					System.out.println("Response: " + value.getWarmingAC());
+//					//reply3.setWarmingAC(String.valueOf(value.getWarmingAC()) );
 //				}
 //
 //				@Override
@@ -81,28 +88,36 @@
 //			};
 //		
 //		//use StreamObserver & requestObserver to send our outgoing messages
-//		StreamObserver<AirConResponse> requestObserverAC = cstub.airConControl(responseObserverAC);
+//		StreamObserver<AirConRequest> requestObserverAC = cstub.airConControl(responseObserverAC);
 //
-//		requestObserverAC.onNext(AirConResponse.newBuilder().setWarmingAC("First message").build());
-//		requestObserverAC.onNext(AirConResponse.newBuilder().setWarmingAC("Second message").build());
-//		
 //		System.out.println("SENDING MESSAGES: " );
+//
+//		requestObserverAC.onNext(AirConRequest.newBuilder().setCoolingAC("First message").build());
+//		requestObserverAC.onNext(AirConRequest.newBuilder().setCoolingAC("Second message").build());
+//		
 //		requestObserverAC.onCompleted();
 //		
-//		Thread.sleep(5000);
-//		
+//		//Thread.sleep(5000);
+//	}
+//	catch (RuntimeException err2) {
+//		err2.printStackTrace();
+//		System.out.println("Client Stream: " + err2);
+//	}
+//	
+//	try {
 //		//BISTREAMING WINDOW CONTROL
 //		// For incoming messages we need to implement a StreamObserver
-//		StreamObserver<WindowsRequest> responseObserverWC = new StreamObserver<WindowsRequest> () {
+//		StreamObserver<WindowsResponse> responseObserverWC = new StreamObserver<WindowsResponse> () {
 //
 //				@Override
-//				public void onNext(WindowsRequest value) {
-//					System.out.println("Response: " + value.getOpenWindow());
+//				public void onNext(WindowsResponse value) {
+//					System.out.println("Response: " + value.getCloseWindow());
+//					//reply4.setCloseWindow(String.valueOf(value.getCloseWindow()) );
 //				}
 //	
 //				@Override
 //				public void onError(Throwable t) {
-//					
+//					t.printStackTrace();
 //				}
 //	
 //				@Override
@@ -114,27 +129,31 @@
 //			};
 //			
 //		//use StreamObserver & requestObserver to send our outgoing messages
-//		StreamObserver<WindowsResponse> requestObserverWC = cstub.windowControl(responseObserverWC);
+//		StreamObserver<WindowsRequest> requestObserverWC = cstub.windowControl(responseObserverWC);
 //
-//		requestObserverWC.onNext(WindowsResponse.newBuilder().setCloseWindow("First message").build());
-//		requestObserverWC.onNext(WindowsResponse.newBuilder().setCloseWindow("Second message").build());
-//		requestObserverWC.onNext(WindowsResponse.newBuilder().setCloseWindow("Third message").build());
+//		requestObserverWC.onNext(WindowsRequest.newBuilder().setOpenWindow("First message").build());
+//		requestObserverWC.onNext(WindowsRequest.newBuilder().setOpenWindow("Second message").build());
+//		requestObserverWC.onNext(WindowsRequest.newBuilder().setOpenWindow("Third message").build());
 //			
 //		System.out.println("SENDING MESSAGES: " );
-//		requestObserverAC.onCompleted();
-//			
-//		Thread.sleep(5000);
-//			
-//	}//try end
+//		requestObserverWC.onCompleted();
+//
+//		//Thread.sleep(5000);
 //		
-//	catch (StatusRuntimeException e) {
-//		System.out.print(e.getMessage());
-//		return;
-//	} 
-//	finally {
-//		//shutdown channel
-//		temperatureChannel.shutdown().awaitTermination(5, TimeUnit.SECONDS);
 //	}
+//	catch (RuntimeException err3) {
+//				err3.printStackTrace();
+//					System.out.println("Bi Stream: " + err3);
+//	}
+//
+////	catch (StatusRuntimeException e) {
+////		System.out.print(e.getMessage());
+////		return;
+////	} 
+////	finally {
+////		//shutdown channel
+////		temperatureChannel.shutdown().awaitTermination(5, TimeUnit.SECONDS);
+////	}
 //	
 //
 //	}//main

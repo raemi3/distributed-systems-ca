@@ -45,7 +45,7 @@ public class TemperatureServer {
 			HeatingResponse.Builder response = HeatingResponse.newBuilder();
 			
 			//send out messages
-			response.setTooCold("Activating Heating " + tooHot);
+			response.setTooCold("Activating Heating");
 			responseObserver.onNext(response.build());
 			
 			response.setTooCold("Heating has been turned on at 18 degrees celsius");
@@ -66,10 +66,12 @@ public class TemperatureServer {
 			System.out.println("Inside Client Streaming Server");
 			return new StreamObserver<AirConRequest>() {
 
+				String warmingAC = "";
+				
 				@Override
 				public void onNext(AirConRequest value) {
-					System.out.println("Message Received: " + value.getCoolingAC());
-					
+					//System.out.println("Message Received: " + value.getCoolingAC());
+					warmingAC = value.getCoolingAC();
 				}
 
 				@Override
@@ -80,42 +82,69 @@ public class TemperatureServer {
 				@Override
 				public void onCompleted() {
 					
-					AirConResponse.Builder acBuilder = AirConResponse.newBuilder();
+					//AirConResponse.Builder acBuilder = AirConResponse.newBuilder();
+					AirConResponse reply = AirConResponse.newBuilder().setWarmingAC("AirCon").build();
+
 					
 					//message from server back to client
-					acBuilder.setWarmingAC("Air Conditioning has been set to 16 degrees celsius");
+					//acBuilder.setWarmingAC("Air Conditioning has been set to 16 degrees celsius");
 					
-					responseObserver.onNext(acBuilder.build());
+					//responseObserver.onNext(acBuilder.build());
+					
+					responseObserver.onNext(reply);
 					
 					responseObserver.onCompleted();
 				}
 			};//return statement
 		}//client streaming end
 	
-//		//BISTREAMING
-//		@Override
-//		public StreamObserver<WindowsRequest> windowControl(StreamObserver<WindowsResponse> responseObserver) {
-//			return new StreamObserver<WindowsRequest>() {
-//
-//				@Override
-//				public void onNext(WindowsRequest value) {
-//					
-//					
-//				}
-//
-//				@Override
-//				public void onError(Throwable t) {
-//					
-//					
-//				}
-//
-//				@Override
-//				public void onCompleted() {
-//					
-//					
-//				}
-//			};
-//	    }//bistreaming end
+		//BISTREAMING
+		@Override
+		public StreamObserver<WindowsRequest> windowControl(StreamObserver<WindowsResponse> responseObserver) {
+			return new StreamObserver<WindowsRequest>() {
+
+				@Override
+				public void onNext(WindowsRequest value) {
+					
+					String openWindow = value.getOpenWindow();
+					System.out.println(value.getOpenWindow());
+					
+					//parsed String into an int to validate codes entered as JTextField doesn't accept int for GUI
+					//String text = openWindow;
+				    //int code = Integer.parseInt(text);
+					
+					if(openWindow.equalsIgnoreCase("open")) {
+						
+						WindowsResponse reply = WindowsResponse.newBuilder().setCloseWindow("Windows Opening").build();
+						
+						responseObserver.onNext(reply);
+					}
+					else if(openWindow.equalsIgnoreCase("close")) {
+		
+						WindowsResponse reply = WindowsResponse.newBuilder().setCloseWindow("Windows Closing").build();
+			
+						responseObserver.onNext(reply);
+					}
+					else {
+						
+						WindowsResponse reply = WindowsResponse.newBuilder().setCloseWindow("Invalid Input - Try Again").build();
+						
+						responseObserver.onNext(reply);
+					}
+					 
+				}
+
+				@Override
+				public void onError(Throwable t) {
+					t.printStackTrace();	
+				}
+
+				@Override
+				public void onCompleted() {
+						responseObserver.onCompleted();
+				}
+			};
+	    }//bistreaming end
 
 	}//static class
 	

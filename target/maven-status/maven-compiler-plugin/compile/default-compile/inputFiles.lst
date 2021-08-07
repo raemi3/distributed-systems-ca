@@ -18,8 +18,10 @@ C:\Users\eimea\eclipse-workspace\SmartArch\src\main\java\clientGUI\GUI_Client.ja
 C:\Users\eimea\eclipse-workspace\SmartArch\src\main\java\service2temperature\HeatingRequestOrBuilder.java
 C:\Users\eimea\eclipse-workspace\SmartArch\src\main\java\service2temperature\WindowsRequestOrBuilder.java
 C:\Users\eimea\eclipse-workspace\SmartArch\src\main\java\service1security\CodeResponseOrBuilder.java
+C:\Users\eimea\eclipse-workspace\SmartArch\src\main\java\service1security\Service1Discovery.java
 C:\Users\eimea\eclipse-workspace\SmartArch\src\main\java\service1security\SecurityClient.java
 C:\Users\eimea\eclipse-workspace\SmartArch\src\main\java\service1security\SecurityServer.java
+C:\Users\eimea\eclipse-workspace\SmartArch\src\main\java\service1security\Service1Registration.java
 C:\Users\eimea\eclipse-workspace\SmartArch\src\main\java\service2temperature\WindowsResponseOrBuilder.java
 C:\Users\eimea\eclipse-workspace\SmartArch\src\main\java\service2temperature\HeatingRequest.java
 C:\Users\eimea\eclipse-workspace\SmartArch\src\main\java\service2temperature\AirConRequestOrBuilder.java
