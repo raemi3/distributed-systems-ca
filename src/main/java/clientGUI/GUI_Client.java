@@ -5,6 +5,7 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.jmdns.ServiceInfo;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -27,10 +28,13 @@ public class GUI_Client implements ActionListener {
 	private JTextField entry3, reply3;
 	private JTextField entry4, reply4;
 
+	//Create a stub for service 2
 	private service2temperature.Service2Grpc.Service2Stub service2Stub;
 	
 	public GUI_Client() {
-		service2Stub = service2temperature.Service2Grpc.newStub(ManagedChannelBuilder.forAddress("localhost", 50052).usePlaintext().build());;
+		//pass the channel for service 2 to the stub
+		service2Stub = service2temperature.Service2Grpc.newStub(
+				ManagedChannelBuilder.forAddress("localhost", 50052).usePlaintext().build());;
 	}
 	
 	private JPanel getService1JPanel() {
@@ -67,7 +71,7 @@ public class GUI_Client implements ActionListener {
 
 		BoxLayout boxlayout = new BoxLayout(panel, BoxLayout.X_AXIS);
 
-		JLabel label = new JLabel("Heating - ON or OFF: ")	;
+		JLabel label = new JLabel("Heating - ON / OFF: ")	;
 		panel.add(label);
 		panel.add(Box.createRigidArea(new Dimension(10, 0)));
 		entry2 = new JTextField("",10);
@@ -96,7 +100,7 @@ public class GUI_Client implements ActionListener {
 
 		BoxLayout boxlayout = new BoxLayout(panel, BoxLayout.X_AXIS);
 
-		JLabel label = new JLabel("AirCon - ON or OFF or TEMP")	;
+		JLabel label = new JLabel("AirCon - ON / OFF / TEMP / HIGHER / LOWER")	;
 		panel.add(label);
 		panel.add(Box.createRigidArea(new Dimension(10, 0)));
 		entry3 = new JTextField("",10);
@@ -124,7 +128,7 @@ public class GUI_Client implements ActionListener {
 
 		BoxLayout boxlayout = new BoxLayout(panel, BoxLayout.X_AXIS);
 
-		JLabel label = new JLabel("Windows - OPEN or CLOSE ");
+		JLabel label = new JLabel("Windows - OPEN / CLOSE ");
 		panel.add(label);
 		panel.add(Box.createRigidArea(new Dimension(10, 0)));
 		entry4 = new JTextField("",10);
@@ -188,17 +192,19 @@ public class GUI_Client implements ActionListener {
 		JButton button = (JButton)e.getSource();
 		String label = button.getActionCommand();  
 
+		//Service 1 Unary RPC
 		if (label.equals("Enter")) {
 			System.out.println("Security Access loading...");
 
+			//comment out when running jmDNS
 			int port = 50051;
 			String host = "localhost";
 			
 //			//jmDNS calling Service1Discovery
 //			ServiceInfo serviceInfo;
-//			String service_type = "_grpc1._tcp.local.";
+//			String service_type = "_grpc._tcp.local.";
 //			//Now retrieve the service info - all we are supplying is the service type
-//			serviceInfo = Service1Discovery.run(service_type);
+//			serviceInfo = service1security.Service1Discovery.run(service_type);
 //			//Use the serviceInfo to retrieve the port
 //			int port = serviceInfo.getPort();
 //			String host = "localhost";
@@ -216,14 +222,15 @@ public class GUI_Client implements ActionListener {
 			reply1.setText(String.valueOf(response.getCheckCode()));
 		
 		}
+		//Service 2 Server Streaming RPC
 		else if (label.equals("Heating")) {
 			System.out.println("Heating System loading...");
 			
-//			//jmDNS calling Service1Discovery
+//			//jmDNS calling Service2Discovery
 //			ServiceInfo serviceInfo;
 //			String service_type = "_grpc2._tcp.local.";
 //			//Now retrieve the service info - all we are supplying is the service type
-//			serviceInfo = Service1Discovery.run(service_type);
+//			serviceInfo = service2temperature.Service2Discovery.run(service_type);
 //			//Use the serviceInfo to retrieve the port
 //			int port = serviceInfo.getPort();
 //			String host = "localhost";
@@ -252,8 +259,18 @@ public class GUI_Client implements ActionListener {
 			service2Stub.heatingControl(request, responseObserver);
 			
 		}
+		//Service 3 Client Streaming RPC
 		else if (label.equals("AirCon")) {
 			System.out.println("AirCon System loading...");
+			
+//			//jmDNS calling Service2Discovery
+//			ServiceInfo serviceInfo;
+//			String service_type = "_grpc2._tcp.local.";
+//			//Now retrieve the service info - all we are supplying is the service type
+//			serviceInfo = service2temperature.Service2Discovery.run(service_type);
+//			//Use the serviceInfo to retrieve the port
+//			int port = serviceInfo.getPort();
+//			String host = "localhost";
 
 				StreamObserver<service2temperature.AirConResponse> responseObserver = new StreamObserver<service2temperature.AirConResponse>() {
 
@@ -281,8 +298,18 @@ public class GUI_Client implements ActionListener {
 			requestObserver.onCompleted();
 			
 		}
+		//Service 4 Bi-streaming RPC
 		else if (label.equals("Windows")) {
 			System.out.println("Window System loading...");
+			
+//			//jmDNS calling Service2Discovery
+//			ServiceInfo serviceInfo;
+//			String service_type = "_grpc2._tcp.local.";
+//			//Now retrieve the service info - all we are supplying is the service type
+//			serviceInfo = service2temperature.Service2Discovery.run(service_type);
+//			//Use the serviceInfo to retrieve the port
+//			int port = serviceInfo.getPort();
+//			String host = "localhost";
 
 				StreamObserver<service2temperature.WindowsResponse> responseObserver = new StreamObserver<service2temperature.WindowsResponse>() {
 

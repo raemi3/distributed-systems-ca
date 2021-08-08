@@ -24,7 +24,7 @@ public class TemperatureServer {
 		
 		int port = 50052;
 		
-//		//jmDNS calling Service1Registration
+//		//jmDNS calling Service2Registration
 //		String service_type = "_grpc2._tcp.local.";
 //		String service_name = "GrpcServer";
 //		Service2Registration s2r = new Service2Registration();
@@ -43,7 +43,9 @@ public class TemperatureServer {
 		//SERVER streaming
 		@Override
 		public void heatingControl(HeatingRequest request, StreamObserver<HeatingResponse> responseObserver) {
+			
 			System.out.println("Server Streaming Server");
+			
 			//find out what the client sent
 			String tooHot = request.getTooHot();
 			System.out.println("Heating : " + tooHot);
@@ -51,33 +53,33 @@ public class TemperatureServer {
 			//build our response
 			HeatingResponse.Builder response = HeatingResponse.newBuilder();
 			
-			if(tooHot.equalsIgnoreCase("on")) {
-				//send out messages
-				response.setTooCold("Activating Heating");
-				responseObserver.onNext(response.build());
-				
-				response.setTooCold("Heating has been turned on at 18 degrees celsius");
-				responseObserver.onNext(response.build());
-				
-				response.setTooCold("Heating will turn off once room temperature hits 21 degrees celsius");
-				responseObserver.onNext(response.build());
-			}
-			else if(tooHot.equalsIgnoreCase("off")) {
-
-				response.setTooCold("De-activating Heating");
-				responseObserver.onNext(response.build());
-				
-				response.setTooCold("Heating has been turned off");
-				responseObserver.onNext(response.build());
-				
-				response.setTooCold("Heating will turn on once room temperature hits 17 degrees celsius");
-				responseObserver.onNext(response.build());
-			}
-			else {
-				
-				response.setTooCold("Invalid Input - Try Again");
-				responseObserver.onNext(response.build());
-			}
+				if(tooHot.equalsIgnoreCase("on")) {
+					//send out messages
+					response.setTooCold("Activating Heating");
+					responseObserver.onNext(response.build());
+					
+					response.setTooCold("Heating has been turned on at 18 degrees celsius");
+					responseObserver.onNext(response.build());
+					
+					response.setTooCold("Heating will turn off once room temperature hits 21 degrees celsius");
+					responseObserver.onNext(response.build());
+				}
+				else if(tooHot.equalsIgnoreCase("off")) {
+	
+					response.setTooCold("De-activating Heating");
+					responseObserver.onNext(response.build());
+					
+					response.setTooCold("Heating has been turned off");
+					responseObserver.onNext(response.build());
+					
+					response.setTooCold("Heating will turn on once room temperature hits 17 degrees celsius");
+					responseObserver.onNext(response.build());
+				}
+				else {
+					
+					response.setTooCold("Invalid Input - Try Again");
+					responseObserver.onNext(response.build());
+				}
 			
 			responseObserver.onCompleted();
 			
@@ -87,12 +89,14 @@ public class TemperatureServer {
 		//CLIENT streaming
 		@Override
 		public StreamObserver<AirConRequest> airConControl(StreamObserver<AirConResponse> responseObserver) {
+			
 			System.out.println("Client Streaming Server");
 			return new StreamObserver<AirConRequest>() {
 				
 				@Override
 				public void onNext(AirConRequest request) {
-				
+					
+					//find out what the client sent
 					String coolingAC = request.getCoolingAC();
 					System.out.println("Heating : " + coolingAC);
 					
@@ -166,12 +170,14 @@ public class TemperatureServer {
 		//BISTREAMING
 		@Override
 		public StreamObserver<WindowsRequest> windowControl(StreamObserver<WindowsResponse> responseObserver) {
+			
 			System.out.println("Bi-Streaming Server");
 			return new StreamObserver<WindowsRequest>() {
 
 				@Override
 				public void onNext(WindowsRequest value) {
 					
+					//find out what the client sent
 					String openWindow = value.getOpenWindow();
 					System.out.println(value.getOpenWindow());
 					
@@ -184,13 +190,13 @@ public class TemperatureServer {
 					
 					if(openWindow.equalsIgnoreCase("open")) {
 						
-						WindowsResponse reply = WindowsResponse.newBuilder().setCloseWindow("Windows Opening").build();
+						WindowsResponse reply = WindowsResponse.newBuilder().setCloseWindow("Windows Opening - Auto-Close at 17C").build();
 						
 						responseObserver.onNext(reply);
 					}
 					else if(openWindow.equalsIgnoreCase("close")) {
 		
-						WindowsResponse reply = WindowsResponse.newBuilder().setCloseWindow("Windows Closing").build();
+						WindowsResponse reply = WindowsResponse.newBuilder().setCloseWindow("Windows Closing - Auto-Open at 24C").build();
 			
 						responseObserver.onNext(reply);
 					}
@@ -212,7 +218,7 @@ public class TemperatureServer {
 				public void onCompleted() {
 						responseObserver.onCompleted();
 				}
-			};
+			};//return statement
 	    }//bistreaming end
 
 	}//static class

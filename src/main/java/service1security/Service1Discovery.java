@@ -11,14 +11,13 @@ import javax.jmdns.ServiceListener;
 
 public class Service1Discovery {
 
-	//private int port;
-	//private String host;
+	private int port;
+	private String host;
 	
-	//option 1
 	private static class MyServiceListener implements ServiceListener{
 
 		private int port;
-		//private String host;
+		private String host;
 		private ServiceInfo serviceInfo;
 		
 		public void serviceAdded(ServiceEvent event) {
@@ -39,7 +38,7 @@ public class Service1Discovery {
 			
 			ServiceInfo serviceInfo = event.getInfo();
 			this.setServiceInfo(serviceInfo);
-			//System.out.println("host " + serviceInfo.getHostAddress());
+			System.out.println("host " + serviceInfo.getHostAddress());
 			//this.setHost(serviceInfo.getHostAddress());
 			System.out.println("port " + serviceInfo.getPort());
 			this.setPort(serviceInfo.getPort());
@@ -85,7 +84,8 @@ public class Service1Discovery {
 			
 			//need to listen for services added/removed etc.
 			
-			//jmdns.addServiceListener(service_type, new MyServiceListener());         //listen for specified type
+			//jmdns.addServiceListener(service_type, new MyServiceListener());         
+			//listen for specified type
 			MyServiceListener msl = new MyServiceListener();		
 			jmdns.addServiceListener(service_type, msl);
 
@@ -111,8 +111,6 @@ public class Service1Discovery {
 			e.printStackTrace();
 		}
 		return serviceInfo;
-
 	}
-
 
 }//class

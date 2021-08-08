@@ -20,7 +20,8 @@ public class Service1Registration {
 			 */
 			
 			//the assumption is that we are registering a grpc server
-			//service_type = "_grpc._tcp.local.";				//service-type.domain
+			//service_type = "_grpc._tcp.local.";				
+			//service-type.domain
 			// service_name + service_type => simple_http._tcp.local
 			//String service_name = "GrpcServer";							
 			int service_port = port;
@@ -44,7 +45,7 @@ public class Service1Registration {
 			System.out.println("\nService Registered");
 			//unregister the services
 			//jmdns.unregisterAllServices();   //you could also unregister a single service
-			
+
 			
 		} catch (UnknownHostException e) {
 			// TODO Auto-generated catch block
